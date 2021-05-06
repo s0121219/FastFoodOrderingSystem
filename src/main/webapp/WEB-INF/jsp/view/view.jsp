@@ -5,6 +5,8 @@
     </head>
     <body>
         <h2>Item #${itemId}: <c:out value="${item.id}" /></h2>
+        [<a href="<c:url value="/item/edit/${itemId}" />">Edit</a>]
+        [<a href="<c:url value="/item/delete/${itemId}" />">Delete</a>]<br />
         <i>Item Name - <c:out value="${item.itemName}" /></i><br /><br />
         <c:out value="${item.itemDescription}" /><br /><br />
         <c:if test="${item.numberOfAttachments > 0}">

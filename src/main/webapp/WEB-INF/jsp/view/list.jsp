@@ -16,6 +16,8 @@
                     <a href="<c:url value="/item/view/${entry.key}" />">
                         <c:out value="${entry.value.id}" /></a>
                     (item: <c:out value="${entry.value.itemName}" />)<br />
+                    [<a href="<c:url value="/item/edit/${entry.key}" />">Edit</a>]
+                    [<a href="<c:url value="/item/delete/${entry.key}" />">Delete</a>]<br />
                 </c:forEach>
             </c:otherwise>
         </c:choose>

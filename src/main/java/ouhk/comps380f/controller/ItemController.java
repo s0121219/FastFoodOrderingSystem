@@ -92,7 +92,7 @@ public class ItemController {
     @PostMapping("/create")
     public View create(Form form) throws IOException {
         Item item = new Item();
-        item.setId(this.getNextTicketId());
+        item.setId(this.getNextItemId());
         item.setItemName(form.getItemName());
         item.setItemDescription(form.getItemDescription());
         item.setPrice(form.getPrice());
@@ -110,7 +110,7 @@ public class ItemController {
         return new RedirectView("/item/view/" + item.getId(), true);
     }
 
-    private synchronized long getNextTicketId() {
+    private synchronized long getNextItemId() {
         return this.ITEM_ID_SEQUENCE++;
     }
 
@@ -126,7 +126,7 @@ public class ItemController {
         return "view";
     }
 
-    @GetMapping("/{ticketId}/attachment/{attachment:.+}")
+    @GetMapping("/{itemId}/attachment/{attachment:.+}")
     public View download(@PathVariable("itemId") long itemId,
             @PathVariable("attachment") String name) {
         Item item = this.itemDatabase.get(itemId);
@@ -139,5 +139,71 @@ public class ItemController {
         }
         return new RedirectView("/item/list", true);
     }
+    
+      @GetMapping("/{itemId}/delete/{attachment:.+}")
+    public String deleteAttachment(@PathVariable("itemId") long itemId,
+            @PathVariable("attachment") String name) {
+        Item item = this.itemDatabase.get(itemId);
+        if (item != null) {
+            if (item.hasAttachment(name)) {
+                item.deleteAttachment(name);
+            }
+        }
+        return "redirect:/item/edit/" + itemId;
+    }
+
+    @GetMapping("/edit/{itemId}")
+    public ModelAndView showEdit(@PathVariable("itemId") long itemId) {
+        Item item = this.itemDatabase.get(itemId);
+        if (item == null) {
+            return new ModelAndView(new RedirectView("/item/list", true));
+        }
+        ModelAndView modelAndView = new ModelAndView("edit");
+        modelAndView.addObject("itemId", Long.toString(itemId));
+        modelAndView.addObject("item", item);
+
+        Form itemForm = new Form();
+        
+        itemForm.setItemName(itemForm.getItemName());
+        itemForm.setItemDescription(itemForm.getItemDescription());
+        itemForm.setPrice(itemForm.getPrice());
+        
+        modelAndView.addObject("itemForm", itemForm);
+
+        return modelAndView;
+    }
+
+    @PostMapping("/edit/{itemId}")
+    public String edit(@PathVariable("itemId") long itemId, Form form)
+            throws IOException {
+        Item item = this.itemDatabase.get(itemId);
+        
+        item.setItemName(form.getItemName());
+        item.setItemDescription(form.getItemDescription());
+        item.setPrice(form.getPrice());
+
+        for (MultipartFile filePart : form.getAttachments()) {
+            Attachment attachment = new Attachment();
+            attachment.setName(filePart.getOriginalFilename());
+            attachment.setMimeContentType(filePart.getContentType());
+            attachment.setContents(filePart.getBytes());
+            if (attachment.getName() != null && attachment.getName().length() > 0
+                    && attachment.getContents() != null && attachment.getContents().length > 0) {
+                item.addAttachment(attachment);
+            }
+        }
+        this.itemDatabase.put(item.getId(), item);
+        return "redirect:/item/view/" + item.getId();
+    }
+
+    @GetMapping("/delete/{itemId}")
+    public String deleteItem(@PathVariable("itemId") long itemId) {
+        if (this.itemDatabase.containsKey(itemId)) {
+            this.itemDatabase.remove(itemId);
+        }
+        return "redirect:/item/list";
+    }
+    
+    
 
 }
