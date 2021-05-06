@@ -15,59 +15,69 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
 import ouhk.comps380f.model.Attachment;
-import ouhk.comps380f.model.Ticket;
+import ouhk.comps380f.model.Item;
 import ouhk.comps380f.view.DownloadingView;
 
 @Controller
-@RequestMapping("/ticket")
-public class TicketController {
+@RequestMapping("/item")
+public class ItemController {
 
-    private volatile long TICKET_ID_SEQUENCE = 1;
-    private Map<Long, Ticket> ticketDatabase = new Hashtable<>();
+    private volatile long ITEM_ID_SEQUENCE = 1;
+    private Map<Long, Item> itemDatabase = new Hashtable<>();
 
     // Controller methods, Form object, ...
     @GetMapping(value = {"", "/list"})
     public String list(ModelMap model) {
-        model.addAttribute("ticketDatabase", ticketDatabase);
+        model.addAttribute("itemDatabase", itemDatabase);
         return "list";
     }
 
     @GetMapping("/create")
     public ModelAndView create() {
-        return new ModelAndView("add", "ticketForm", new Form());
+        return new ModelAndView("add", "itemForm", new Form());
     }
 
     public static class Form {
 
-        private String customerName;
-        private String subject;
-        private String body;
+        private String itemName;
+        private String itemDescription;
+        private String price;
+        private boolean availability;
         private List<MultipartFile> attachments;
         // Getters and Setters of customerName, subject, body, attachments
 
-        public String getCustomerName() {
-            return customerName;
+        public String getItemName() {
+            return itemName;
         }
 
-        public void setCustomerName(String customerName) {
-            this.customerName = customerName;
+        public void setItemName(String itemName) {
+            this.itemName = itemName;
         }
 
-        public String getSubject() {
-            return subject;
+        public String getItemDescription() {
+            return itemDescription;
         }
 
-        public void setSubject(String subject) {
-            this.subject = subject;
+        public void setItemDescription(String itemDescription) {
+            this.itemDescription = itemDescription;
         }
 
-        public String getBody() {
-            return body;
+        public String getPrice() {
+            return price;
         }
 
-        public void setBody(String body) {
-            this.body = body;
+        public void setPrice(String price) {
+            this.price = price;
         }
+
+        public boolean isAvailability() {
+            return availability;
+        }
+
+        public void setAvailability(boolean availability) {
+            this.availability = availability;
+        }
+       
 
         public List<MultipartFile> getAttachments() {
             return attachments;
@@ -81,11 +91,11 @@ public class TicketController {
 
     @PostMapping("/create")
     public View create(Form form) throws IOException {
-        Ticket ticket = new Ticket();
-        ticket.setId(this.getNextTicketId());
-        ticket.setCustomerName(form.getCustomerName());
-        ticket.setSubject(form.getSubject());
-        ticket.setBody(form.getBody());
+        Item item = new Item();
+        item.setId(this.getNextTicketId());
+        item.setItemName(form.getItemName());
+        item.setItemDescription(form.getItemDescription());
+        item.setPrice(form.getPrice());
         for (MultipartFile filePart : form.getAttachments()) {
             Attachment attachment = new Attachment();
             attachment.setName(filePart.getOriginalFilename());
@@ -93,41 +103,41 @@ public class TicketController {
             attachment.setContents(filePart.getBytes());
             if (attachment.getName() != null && attachment.getName().length() > 0
                     && attachment.getContents() != null && attachment.getContents().length > 0) {
-                ticket.addAttachment(attachment);
+                item.addAttachment(attachment);
             }
         }
-        this.ticketDatabase.put(ticket.getId(), ticket);
-        return new RedirectView("/ticket/view/" + ticket.getId(), true);
+        this.itemDatabase.put(item.getId(), item);
+        return new RedirectView("/item/view/" + item.getId(), true);
     }
 
     private synchronized long getNextTicketId() {
-        return this.TICKET_ID_SEQUENCE++;
+        return this.ITEM_ID_SEQUENCE++;
     }
 
-    @GetMapping("/view/{ticketId}")
-    public String view(@PathVariable("ticketId") long ticketId,
+    @GetMapping("/view/{itemId}")
+    public String view(@PathVariable("itemId") long itemId,
             ModelMap model) {
-        Ticket ticket = this.ticketDatabase.get(ticketId);
-        if (ticket == null) {
-            return "redirect:/ticket/list";
+        Item item = this.itemDatabase.get(itemId);
+        if (item == null) {
+            return "redirect:/item/list";
         }
-        model.addAttribute("ticketId", ticketId);
-        model.addAttribute("ticket", ticket);
+        model.addAttribute("itemId", itemId);
+        model.addAttribute("item", item);
         return "view";
     }
 
     @GetMapping("/{ticketId}/attachment/{attachment:.+}")
-    public View download(@PathVariable("ticketId") long ticketId,
+    public View download(@PathVariable("itemId") long itemId,
             @PathVariable("attachment") String name) {
-        Ticket ticket = this.ticketDatabase.get(ticketId);
-        if (ticket != null) {
-            Attachment attachment = ticket.getAttachment(name);
+        Item item = this.itemDatabase.get(itemId);
+        if (item != null) {
+            Attachment attachment = item.getAttachment(name);
             if (attachment != null) {
                 return new DownloadingView(attachment.getName(),
                         attachment.getMimeContentType(), attachment.getContents());
             }
         }
-        return new RedirectView("/ticket/list", true);
+        return new RedirectView("/item/list", true);
     }
 
 }

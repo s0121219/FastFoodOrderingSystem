@@ -5,14 +5,23 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class Ticket implements Serializable {
+public class Item implements Serializable {
 
     private long id;
-    private String customerName;
-    private String subject;
-    private String body;
+    private String itemName;
+    private String itemDescription;
+    private String price;
+    private boolean availability;
     private Map<String, Attachment> attachments = new Hashtable<>();
     // Getters and Setters of id, customerName, subject, body
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
 
     public long getId() {
         return id;
@@ -22,29 +31,35 @@ public class Ticket implements Serializable {
         this.id = id;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getItemDescription() {
+        return itemDescription;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
     }
 
-    public String getSubject() {
-        return subject;
+    public String getPrice() {
+        return price;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setPrice(String price) {
+        this.price = price;
     }
 
-    public String getBody() {
-        return body;
+    
+
+    public boolean isAvailability() {
+        return availability;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setAvailability(boolean availability) {
+        this.availability = availability;
     }
+
+    
+
+    
 
     public Attachment getAttachment(String name) {
         return this.attachments.get(name);
