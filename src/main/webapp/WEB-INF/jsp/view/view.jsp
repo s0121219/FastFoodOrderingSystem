@@ -4,9 +4,21 @@
         <title>Customer Support</title>
     </head>
     <body>
+        <c:url var="logoutUrl" value="/logout"/>
+        <form action="${logoutUrl}" method="post">
+            <input type="submit" value="Log out" />
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        </form>
+
         <h2>Item #${itemId}: <c:out value="${item.id}" /></h2>
-        [<a href="<c:url value="/item/edit/${itemId}" />">Edit</a>]
-        [<a href="<c:url value="/item/delete/${itemId}" />">Delete</a>]<br />
+
+
+        <security:authorize access="hasRole('ADMIN')">
+            [<a href="<c:url value="/item/edit/${itemId}" />">Edit</a>]
+            [<a href="<c:url value="/item/delete/${itemId}" />">Delete</a>]<br />
+        </security:authorize>
+
+
         <i>Item Name - <c:out value="${item.itemName}" /></i><br /><br />
         <c:out value="${item.itemDescription}" /><br /><br />
         <c:if test="${item.numberOfAttachments > 0}">

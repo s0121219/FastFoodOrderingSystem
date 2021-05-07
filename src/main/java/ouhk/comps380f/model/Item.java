@@ -8,12 +8,21 @@ import java.util.Map;
 public class Item implements Serializable {
 
     private long id;
+    private String addedBy;
     private String itemName;
     private String itemDescription;
     private String price;
     private boolean availability;
     private Map<String, Attachment> attachments = new Hashtable<>();
     // Getters and Setters of id, customerName, subject, body
+
+    public String getAddedBy() {
+        return addedBy;
+    }
+
+    public void setAddedBy(String addedBy) {
+        this.addedBy = addedBy;
+    }
 
     public String getItemName() {
         return itemName;
@@ -47,8 +56,6 @@ public class Item implements Serializable {
         this.price = price;
     }
 
-    
-
     public boolean isAvailability() {
         return availability;
     }
@@ -56,10 +63,6 @@ public class Item implements Serializable {
     public void setAvailability(boolean availability) {
         this.availability = availability;
     }
-
-    
-
-    
 
     public Attachment getAttachment(String name) {
         return this.attachments.get(name);
@@ -76,7 +79,7 @@ public class Item implements Serializable {
     public int getNumberOfAttachments() {
         return this.attachments.size();
     }
-    
+
     public boolean hasAttachment(String name) {
         return this.attachments.containsKey(name);
     }

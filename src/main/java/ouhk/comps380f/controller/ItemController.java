@@ -1,9 +1,11 @@
 package ouhk.comps380f.controller;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,7 +79,6 @@ public class ItemController {
         public void setAvailability(boolean availability) {
             this.availability = availability;
         }
-       
 
         public List<MultipartFile> getAttachments() {
             return attachments;
@@ -90,8 +91,9 @@ public class ItemController {
     }
 
     @PostMapping("/create")
-    public View create(Form form) throws IOException {
+    public View create(Form form, Principal principal) throws IOException {
         Item item = new Item();
+        item.setAddedBy(principal.getName());
         item.setId(this.getNextItemId());
         item.setItemName(form.getItemName());
         item.setItemDescription(form.getItemDescription());
@@ -139,8 +141,8 @@ public class ItemController {
         }
         return new RedirectView("/item/list", true);
     }
-    
-      @GetMapping("/{itemId}/delete/{attachment:.+}")
+
+    @GetMapping("/{itemId}/delete/{attachment:.+}")
     public String deleteAttachment(@PathVariable("itemId") long itemId,
             @PathVariable("attachment") String name) {
         Item item = this.itemDatabase.get(itemId);
@@ -153,7 +155,7 @@ public class ItemController {
     }
 
     @GetMapping("/edit/{itemId}")
-    public ModelAndView showEdit(@PathVariable("itemId") long itemId) {
+    public ModelAndView showEdit(@PathVariable("itemId") long itemId, HttpServletRequest request) {
         Item item = this.itemDatabase.get(itemId);
         if (item == null) {
             return new ModelAndView(new RedirectView("/item/list", true));
@@ -163,11 +165,11 @@ public class ItemController {
         modelAndView.addObject("item", item);
 
         Form itemForm = new Form();
-        
+
         itemForm.setItemName(itemForm.getItemName());
         itemForm.setItemDescription(itemForm.getItemDescription());
         itemForm.setPrice(itemForm.getPrice());
-        
+
         modelAndView.addObject("itemForm", itemForm);
 
         return modelAndView;
@@ -177,7 +179,7 @@ public class ItemController {
     public String edit(@PathVariable("itemId") long itemId, Form form)
             throws IOException {
         Item item = this.itemDatabase.get(itemId);
-        
+
         item.setItemName(form.getItemName());
         item.setItemDescription(form.getItemDescription());
         item.setPrice(form.getPrice());
@@ -203,7 +205,5 @@ public class ItemController {
         }
         return "redirect:/item/list";
     }
-    
-    
 
 }
