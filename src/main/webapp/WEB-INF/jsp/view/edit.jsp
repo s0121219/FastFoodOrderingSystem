@@ -10,7 +10,7 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
 
-        <h2>Item #${itemtId}</h2>
+        <h2>Item #${item.id}</h2>
         <form:form method="POST" enctype="multipart/form-data" 
                    modelAttribute="itemForm">
             <form:label path="itemName">Item Name</form:label><br />
@@ -27,13 +27,13 @@
             <form:label path="availability">Availability</form:label><br />
             <form:checkbox path = "availability" /><br /><br />
 
-            <c:if test="${item.numberOfAttachments > 0}">
+            <c:if test="${item.attachments > 0}">
                 <b>Attachments:</b><br/>
                 <ul>
                     <c:forEach items="${item.attachments}" var="attachment">
                         <li>
                             <c:out value="${attachment.name}" />
-                            [<a href="<c:url value="/ticket/${ticketId}/delete/${attachment.name}" />">Delete</a>]
+                            [<a href="<c:url value="/item/${item.id}/delete/${attachment.name}" />">Delete</a>]
                         </li>
                     </c:forEach>
                 </ul>
@@ -42,5 +42,6 @@
             <input type="file" name="attachments" multiple="multiple"/><br/><br/>
             <input type="submit" value="Save"/>
         </form:form>
+            <a href="<c:url value="/item" />">Return to item list</a>
     </body>
 </html>

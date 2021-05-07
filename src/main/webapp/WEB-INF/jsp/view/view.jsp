@@ -10,23 +10,23 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
 
-        <h2>Item #${itemId}: <c:out value="${item.id}" /></h2>
+        <h2>Item #${item.id}: <c:out value="${item.id}" /></h2>
 
 
         <security:authorize access="hasRole('ADMIN')">
-            [<a href="<c:url value="/item/edit/${itemId}" />">Edit</a>]
-            [<a href="<c:url value="/item/delete/${itemId}" />">Delete</a>]<br />
+            [<a href="<c:url value="/item/edit/${item.id}" />">Edit</a>]
+            [<a href="<c:url value="/item/delete/${item.id}" />">Delete</a>]<br />
         </security:authorize>
 
 
         <i>Item Name - <c:out value="${item.itemName}" /></i><br /><br />
         <c:out value="${item.itemDescription}" /><br /><br />
-        <c:if test="${item.numberOfAttachments > 0}">
+        <c:if test="${fn:length(item.attachments) > 0}">
             Attachments:
             <c:forEach items="${item.attachments}" var="attachment"
                        varStatus="status">
                 <c:if test="${!status.first}">, </c:if>
-                <a href="<c:url value="/item/${itemId}/attachment/${attachment.name}" />">
+                <a href="<c:url value="/item/${item.id}/attachment/${attachment.name}" />">
                     <c:out value="${attachment.name}" /></a>
             </c:forEach><br /><br />
         </c:if>
