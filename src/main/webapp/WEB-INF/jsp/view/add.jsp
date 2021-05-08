@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Customer Support</title>
+        <title>Fast Food Ordering System</title>
     </head>
     <body>
         <c:url var="logoutUrl" value="/logout"/>
@@ -17,18 +17,18 @@
             <form:input type="text" path="itemName" /><br /><br />
 
             <form:label path="itemDescription">Item Description</form:label><br />
-            <form:textarea path="itemDescription" rows="5" cols="30" /><br /><br />
+            <form:input type="text" path="itemDescription" /><br /><br />
 
 
             <form:label path="price">Price</form:label><br />
-            <form:input type="text" path="price" /><br /><br />
+            <form:input type="number" min="1" path="price" /><br /><br />
 
 
             <form:label path="availability">Availability</form:label><br />
             <form:checkbox path = "availability" /><br /><br />
 
             <b>Upload Photo(Optional)</b><br />
-            <input type="file" name="attachments" multiple="multiple" /><br /><br />
+            <input type="file" accept="image/*" name="attachments" multiple="multiple" /><br /><br />
             <input type="submit" value="Submit"/>
         </form:form>
     </body>

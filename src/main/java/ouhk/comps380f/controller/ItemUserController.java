@@ -2,7 +2,9 @@ package ouhk.comps380f.controller;
 
 import java.io.IOException;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,8 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
 import ouhk.comps380f.dao.ItemUserRepository;
 import ouhk.comps380f.model.ItemUser;
+import ouhk.comps380f.service.ItemUserService;
+import ouhk.comps380f.exception.UserNotFound;
 
 @Controller
 @RequestMapping("/user")
@@ -32,7 +36,34 @@ public class ItemUserController {
         private String username;
         private String password;
         private String[] roles;
+        private String fullname;
+        private String phoneNumber;
+        private String deliveryAddress;
         // ... getters and setters for each of the properties
+
+        public String getFullname() {
+            return fullname;
+        }
+
+        public void setFullname(String fullname) {
+            this.fullname = fullname;
+        }
+
+        public String getPhoneNumber() {
+            return phoneNumber;
+        }
+
+        public void setPhoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
+        }
+
+        public String getDeliveryAddress() {
+            return deliveryAddress;
+        }
+
+        public void setDeliveryAddress(String deliveryAddress) {
+            this.deliveryAddress = deliveryAddress;
+        }
 
         public String getUsername() {
             return username;
@@ -57,8 +88,7 @@ public class ItemUserController {
         public void setRoles(String[] roles) {
             this.roles = roles;
         }
-        
-        
+
     }
 
     @GetMapping("/create")
@@ -69,14 +99,56 @@ public class ItemUserController {
     @PostMapping("/create")
     public View create(Form form) throws IOException {
         ItemUser user = new ItemUser(form.getUsername(),
-                form.getPassword(), form.getRoles()
+                form.getPassword(), form.getFullname(), form.getPhoneNumber(), form.getDeliveryAddress()
         );
         itemUserRepo.save(user);
         return new RedirectView("/user/list", true);
     }
 
+    @GetMapping("/edit/{username}")
+    public ModelAndView showEdit(@PathVariable("username") String username, HttpServletRequest request) {
+        ItemUser itemUser = itemUserRepo.findById(username).orElse(null);
+        if (itemUser == null) {
+            return new ModelAndView(new RedirectView("/user", true));
+        }
+
+        ModelAndView modelAndView = new ModelAndView("editUser");
+        modelAndView.addObject("itemUser", itemUser);
+
+        Form userForm = new Form();
+
+        userForm.setUsername(userForm.getUsername());
+        userForm.setPassword(userForm.getPassword());
+        userForm.setFullname(userForm.getFullname());
+        userForm.setPhoneNumber(userForm.getPhoneNumber());
+        userForm.setDeliveryAddress(userForm.getDeliveryAddress());
+
+        modelAndView.addObject("userForm", userForm);
+        return modelAndView;
+    }
+
+    @PostMapping("/edit/{username}")
+    @Transactional(rollbackFor = UserNotFound.class)
+    public String edit(@PathVariable("username") String username, Form form)
+            throws IOException, UserNotFound {
+        ItemUser updatedUser = itemUserRepo.findById(username).orElse(null);
+        if (updatedUser == null) {
+            return "redirect:/user";
+        }
+        
+        updatedUser.setUsername(form.getUsername());
+        updatedUser.setPassword(form.getPassword());
+        updatedUser.setFullname(form.getFullname());
+        updatedUser.setPhoneNumber(form.getPhoneNumber());
+        updatedUser.setDeliveryAddress(form.getDeliveryAddress());
+        
+        itemUserRepo.save(updatedUser);
+
+        return "redirect:/user/" + updatedUser.getUsername();
+    }
+
     @GetMapping("/delete/{username}")
-    public View deleteItem(@PathVariable("username") String username) {
+    public View deleteUser(@PathVariable("username") String username) {
         itemUserRepo.delete(itemUserRepo.findById(username).orElse(null));
         return new RedirectView("/user/list", true);
     }

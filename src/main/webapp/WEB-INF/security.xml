@@ -42,10 +42,10 @@
         <intercept-url pattern="/item/**" access="hasAnyRole('USER','ADMIN')" />
         
         <form-login login-page="/login" default-target-url="/item/list" authentication-failure-url="/login?error" />
-        <logout logout-success-url="/login?logout"
+        <logout logout-success-url="/?logout"
                 invalidate-session="true"
                 delete-cookies="JSESSIONID" />
-        <remember-me key="custSupportSecret" token-validity-seconds="86400" />
+        <remember-me key="FFOSSecret" token-validity-seconds="86400" />
     </http>
     
     <!-- Create default configuration for Hibernate -->

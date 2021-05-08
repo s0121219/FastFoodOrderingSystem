@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
 import ouhk.comps380f.exception.AttachmentNotFound;
 import ouhk.comps380f.exception.ItemNotFound;
+import ouhk.comps380f.model.Attachment;
 import ouhk.comps380f.model.Item;
 import ouhk.comps380f.service.AttachmentService;
 import ouhk.comps380f.service.ItemService;
+import ouhk.comps380f.view.DownloadingView;
 
 @Controller
 @RequestMapping("/item")
@@ -90,27 +93,7 @@ public class ItemController {
         }
 
     }
-
-//    @PostMapping("/create")
-//    public View create(Form form, Principal principal) throws IOException {
-//        Item item = new Item();
-//        item.setId(this.getNextItemId());
-//        item.setItemName(form.getItemName());
-//        item.setItemDescription(form.getItemDescription());
-//        item.setPrice(form.getPrice());
-//        for (MultipartFile filePart : form.getAttachments()) {
-//            Attachment attachment = new Attachment();
-//            attachment.setName(filePart.getOriginalFilename());
-//            attachment.setMimeContentType(filePart.getContentType());
-//            attachment.setContents(filePart.getBytes());
-//            if (attachment.getName() != null && attachment.getName().length() > 0
-//                    && attachment.getContents() != null && attachment.getContents().length > 0) {
-//                item.addAttachment(attachment);
-//            }
-//        }
-//        this.itemDatabase.put(item.getId(), item);
-//        return new RedirectView("/item/view/" + item.getId(), true);
-//    }
+    
     @PostMapping("/create")
     public String create(Form form, Principal principal) throws IOException {
         long itemId = itemService.createItem(form.getItemName(),
@@ -118,17 +101,7 @@ public class ItemController {
         return "redirect:/item/view/" + itemId;
     }
 
-//    @GetMapping("/view/{itemId}")
-//    public String view(@PathVariable("itemId") long itemId,
-//            ModelMap model) {
-//        Item item = this.itemDatabase.get(itemId);
-//        if (item == null) {
-//            return "redirect:/item/list";
-//        }
-//        model.addAttribute("itemId", itemId);
-//        model.addAttribute("item", item);
-//        return "view";
-//    }
+
     @GetMapping("/view/{itemId}")
     public String view(@PathVariable("itemId") long itemId,
             ModelMap model) {
@@ -140,30 +113,18 @@ public class ItemController {
         return "view";
     }
 
-//    @GetMapping("/{itemId}/attachment/{attachment:.+}")
-//    public View download(@PathVariable("itemId") long itemId,
-//            @PathVariable("attachment") String name) {
-//        Item item = this.itemDatabase.get(itemId);
-//        if (item != null) {
-//            Attachment attachment = item.getAttachment(name);
-//            if (attachment != null) {
-//                return new DownloadingView(attachment.getName(),
-//                        attachment.getMimeContentType(), attachment.getContents());
-//            }
-//        }
-//        return new RedirectView("/item/list", true);
-//    }
-//    @GetMapping("/{itemId}/delete/{attachment:.+}")
-//    public String deleteAttachment(@PathVariable("itemId") long itemId,
-//            @PathVariable("attachment") String name) {
-//        Item item = this.itemDatabase.get(itemId);
-//        if (item != null) {
-//            if (item.hasAttachment(name)) {
-//                item.deleteAttachment(name);
-//            }
-//        }
-//        return "redirect:/item/edit/" + itemId;
-//    }
+    @GetMapping("/{itemId}/attachment/{attachment:.+}")
+    public View download(@PathVariable("itemId") long itemId,
+            @PathVariable("attachment") String name) {
+        Attachment attachment = attachmentService.getAttachment(itemId, name);
+        if (attachment != null) {
+            return new DownloadingView(attachment.getName(),
+                    attachment.getMimeContentType(), attachment.getContents());
+        }
+        return new RedirectView("/item/list", true);
+    }
+
+
     @GetMapping("/{itemId}/delete/{attachment:.+}")
     public String deleteAttachment(@PathVariable("itemId") long itemId,
             @PathVariable("attachment") String name) throws AttachmentNotFound {
@@ -177,18 +138,19 @@ public class ItemController {
         if (item == null) {
             return new ModelAndView(new RedirectView("/item/list", true));
         }
+        
         ModelAndView modelAndView = new ModelAndView("edit");
         modelAndView.addObject("item", item);
 
         Form itemForm = new Form();
-
+        
         itemForm.setItemName(itemForm.getItemName());
         itemForm.setItemDescription(itemForm.getItemDescription());
         itemForm.setPrice(itemForm.getPrice());
         itemForm.setAvailability(itemForm.isAvailability());
 
         modelAndView.addObject("itemForm", itemForm);
-
+        modelAndView.addObject("itemDescription", itemForm.getItemDescription());
         return modelAndView;
     }
 
@@ -204,13 +166,7 @@ public class ItemController {
 
         return "redirect:/item/view/" + itemId;
     }
-//    @GetMapping("/delete/{itemId}")
-//    public String deleteItem(@PathVariable("itemId") long itemId) {
-//        if (this.itemDatabase.containsKey(itemId)) {
-//            this.itemDatabase.remove(itemId);
-//        }
-//        return "redirect:/item/list";
-//    }
+
 
     @GetMapping("/delete/{itemId}")
     public String deleteItem(@PathVariable("itemId") long itemId)
