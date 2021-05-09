@@ -31,12 +31,14 @@
     
     <context:annotation-config />
     <b:bean id="itemUserService" class="ouhk.comps380f.service.ItemUserService" />
+    <b:bean id="userOrderService" class="ouhk.comps380f.service.UserOrderService" />
     <authentication-manager>
         <authentication-provider user-service-ref="itemUserService" />
     </authentication-manager>
     
     <http auto-config="true">
-        <intercept-url pattern="/user/**" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/user/create/**" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/user/list/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/item/delete/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/item/edit/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/item/**" access="hasAnyRole('USER','ADMIN')" />

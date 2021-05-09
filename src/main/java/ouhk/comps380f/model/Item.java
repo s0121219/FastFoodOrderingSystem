@@ -24,10 +24,13 @@ public class Item implements Serializable {
     private String itemDescription;
     private String price;
     private boolean availability;
+    
     @OneToMany(mappedBy = "item", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(FetchMode.SUBSELECT)
     private List<Attachment> attachments = new ArrayList<>();
+    
+    
     // getters and setters of all properties
 
     public long getId() {

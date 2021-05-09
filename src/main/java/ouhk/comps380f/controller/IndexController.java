@@ -134,6 +134,7 @@ public class IndexController {
         itemUserRepo.save(user);
         return new RedirectView("/", true);
     }
+    
 
     @GetMapping("/login")
     public String login() {

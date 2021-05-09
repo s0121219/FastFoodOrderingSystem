@@ -37,21 +37,4 @@ public class ItemUserService implements UserDetailsService {
         return new User(itemUser.getUsername(), itemUser.getPassword(), authorities);
     }
 
-    @Transactional(rollbackFor = UserNotFound.class)
-    public void updateUser(String originUsername, String username, String password, String fullname, String phoneNumber, String deliveryAddress)
-            throws IOException, UserNotFound {
-        ItemUser updatedUser = itemUserRepo.findById(originUsername).orElse(null);
-
-        if (updatedUser == null) {
-            throw new UserNotFound();
-        }
-        updatedUser.setUsername(username);
-        updatedUser.setPassword(password);
-        updatedUser.setFullname(fullname);
-        updatedUser.setPhoneNumber(phoneNumber);
-        updatedUser.setDeliveryAddress(deliveryAddress);
-
-        itemUserRepo.save(updatedUser);
-    }
-
 }

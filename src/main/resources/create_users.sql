@@ -19,9 +19,7 @@ CREATE TABLE user_orders (
     user_orders_id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
     username VARCHAR(50) NOT NULL,
     item_id INTEGER NOT NULL ,
-    PRIMARY KEY (user_orders_id),
-    FOREIGN KEY (username) REFERENCES users(username),
-    FOREIGN KEY (item_id) REFERENCES item(id)
+    PRIMARY KEY (user_orders_id)
 );
 
 INSERT INTO users VALUES ('admin', '{noop}admin','admin','','');--username and password--

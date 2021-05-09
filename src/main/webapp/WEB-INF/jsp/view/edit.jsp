@@ -25,7 +25,15 @@
 
 
             <form:label path="availability">Availability</form:label><br />
-            <form:checkbox path = "availability" value="${item.availability}"/><br /><br />
+            
+            <c:choose>
+                <c:when test="${item.availability}">
+                    <form:checkbox path = "availability" checked="checked"/><br /><br />
+                </c:when>
+                <c:otherwise>
+                    <form:checkbox path = "availability"/><br /><br />
+                </c:otherwise>
+            </c:choose>
 
             <c:if test="${fn:length(item.attachments) > 0}">
                 <b>Attachments:</b><br/>

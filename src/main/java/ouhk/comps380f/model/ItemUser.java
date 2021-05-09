@@ -23,7 +23,8 @@ public class ItemUser implements Serializable {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserRole> roles = new ArrayList<>();
-
+    
+    
     public ItemUser() {
     }
 
@@ -37,6 +38,9 @@ public class ItemUser implements Serializable {
     }
     // getters and setters of all properties
 
+
+    
+    
     public String getFullname() {
         return fullname;
     }
