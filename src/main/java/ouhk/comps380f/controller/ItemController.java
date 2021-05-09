@@ -18,12 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
+import ouhk.comps380f.dao.CommentRepository;
 import ouhk.comps380f.dao.ItemUserRepository;
 import ouhk.comps380f.dao.UserOrderRepository;
 import ouhk.comps380f.exception.AttachmentNotFound;
 import ouhk.comps380f.exception.ItemNotFound;
 import ouhk.comps380f.exception.UserOrderNotFound;
 import ouhk.comps380f.model.Attachment;
+import ouhk.comps380f.model.Comment;
 import ouhk.comps380f.model.Item;
 import ouhk.comps380f.model.ItemUser;
 import ouhk.comps380f.model.UserOrder;
@@ -47,17 +49,18 @@ public class ItemController {
     UserOrderRepository userOrderRepo;
     @Resource
     ItemUserRepository itemUserRepo;
-
+    @Resource
+    CommentRepository commentRepo;
 
     @GetMapping(value = {"", "/list"})
     @Transactional
-    public String list(ModelMap model,Principal principal) {
+    public String list(ModelMap model, Principal principal) {
         model.addAttribute("itemDatabase", itemService.getItems());
         ItemUser itemUser = itemUserRepo.findById(principal.getName()).orElse(null);
         List<ItemUser> itemUserList = new ArrayList<ItemUser>();
         itemUserList.add(itemUser);
         model.addAttribute("User", itemUserList);
-        
+
 //System.out.println(itemUser.getUsername());
         return "list";
     }
@@ -140,6 +143,38 @@ public class ItemController {
 
     }
 
+    public static class CommentForm {
+
+        private long id;
+        private String content;
+        private long itemId;
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(long id) {
+            this.id = id;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
+
+        public long getItemId() {
+            return itemId;
+        }
+
+        public void setItemId(long itemId) {
+            this.itemId = itemId;
+        }
+
+    }
+
     @PostMapping("/create")
     public String create(Form form, Principal principal) throws IOException {
         long itemId = itemService.createItem(form.getItemName(),
@@ -148,14 +183,43 @@ public class ItemController {
     }
 
     @GetMapping("/view/{itemId}")
-    public String view(@PathVariable("itemId") long itemId,
+    public ModelAndView showview(@PathVariable("itemId") long itemId,
             ModelMap model) {
         Item item = itemService.getItem(itemId);
         if (item == null) {
-            return "redirect:/item/list";
+            return new ModelAndView(new RedirectView("/item/list", true));
         }
-        model.addAttribute("item", item);
-        return "view";
+        ModelAndView modelAndView = new ModelAndView("view");
+        
+        modelAndView.addObject("item", item);
+        
+        CommentForm commentForm = new CommentForm();
+        modelAndView.addObject("commentForm", commentForm);
+        List<Comment> commentlist = new ArrayList<>();
+        for(Comment comment:commentRepo.findAll())
+        {
+            if(comment.getItemId()==itemId)
+            {
+                commentlist.add(comment);
+            }
+        }
+        
+        modelAndView.addObject("comment",commentlist);
+                
+        return modelAndView;
+    }
+
+    @PostMapping("/view/{itemId}")
+    public String view_postcomment(@PathVariable("itemId") long itemId, CommentForm commentform)
+            throws IOException {
+        Item item = itemService.getItem(itemId);
+        Comment comment = new Comment();
+        comment.setContent(commentform.getContent());
+        comment.setItem(item);
+        commentRepo.save(comment);
+        
+        return "redirect:/item/view/" + itemId;
+
     }
 
     @GetMapping("/{itemId}/attachment/{attachment:.+}")
@@ -194,7 +258,6 @@ public class ItemController {
         itemForm.setAvailability(itemForm.isAvailability());
 
         modelAndView.addObject("itemForm", itemForm);
-        modelAndView.addObject("itemDescription", itemForm.getItemDescription());
         return modelAndView;
     }
 

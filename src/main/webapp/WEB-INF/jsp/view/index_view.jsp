@@ -37,6 +37,12 @@
             Unavailable for order.<br /><br />
         </c:otherwise>
         </c:choose>
+            
+            Comment:
+                <c:forEach items="${comment}" var="cm">
+                    <br /><br />${cm.content}
+                </c:forEach>
+                    
         <a href="<c:url value="/" />">Return to item list</a>
     </body>
 </html>

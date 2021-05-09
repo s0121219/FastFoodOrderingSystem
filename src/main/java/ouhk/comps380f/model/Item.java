@@ -30,8 +30,19 @@ public class Item implements Serializable {
     @Fetch(FetchMode.SUBSELECT)
     private List<Attachment> attachments = new ArrayList<>();
     
-    
+     @OneToMany(mappedBy = "item", fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SUBSELECT)
+    private List<Comment> comments = new ArrayList<>();
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
     // getters and setters of all properties
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
     public long getId() {
         return id;

@@ -21,24 +21,39 @@
 
         <i>Item Name - <c:out value="${item.itemName}" /></i><br /><br />
         <c:if test="${fn:length(item.attachments) > 0}">
-        
-        <c:forEach items="${item.attachments}" var="attachment"
+
+            <c:forEach items="${item.attachments}" var="attachment"
                        varStatus="status">
                 <c:if test="${!status.first}">&ensp; </c:if>
-                    <img width="256" height="256" src="/FastFoodOrderingSystem/item/${item.id}/attachment/${attachment.name}">
-                   
+                <img width="256" height="256" src="/FastFoodOrderingSystem/item/${item.id}/attachment/${attachment.name}">
+
             </c:forEach><br /><br />
-            </c:if>
+        </c:if>
         Item description: <c:out value="${item.itemDescription}" /><br /><br />
         Price: $<c:out value="${item.price}" /><br /><br />
         <c:choose>
-        <c:when test="${item.availability}">
-            Available for order.<br /><br />
-        </c:when>
-        <c:otherwise>
-            Unavailable for order.<br /><br />
-        </c:otherwise>
+            <c:when test="${item.availability}">
+                Available for order.<br /><br />
+            </c:when>
+            <c:otherwise>
+                Unavailable for order.<br /><br />
+            </c:otherwise>
         </c:choose>
+                
+                Comment:
+                <c:forEach items="${comment}" var="cm">
+                    <br /><br />${cm.content}
+                </c:forEach>
+                
+                <br />-------------------------------------<br /><br />
+        <form:form method="POST" enctype="multipart/form-data" 
+                   modelAttribute="commentForm">
+            <form:label path="content">Write your comment</form:label><br />
+            <form:input type="textarea" path="content" rows="10" cols="30" /><br /><br />
+            <input type="submit" value="Submit"/>
+        </form:form>
+
+        <br />-------------------------------------<br />
         <a href="<c:url value="/item" />">Return to item list</a>
     </body>
 </html>
