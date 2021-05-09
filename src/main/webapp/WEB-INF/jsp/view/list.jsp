@@ -25,7 +25,8 @@
             </c:forEach>
         </security:authorize>
 
-        [<a href="<c:url value="/item/shoppingcart" />">View Shopping cart</a>]<br /><br />
+        [<a href="<c:url value="/item/shoppingcart" />">View Shopping cart</a>]
+        [<a href="<c:url value="/item/orderinghistory" />">Ordering History</a>]<br /><br />
 
         <c:choose>
             <c:when test="${fn:length(itemDatabase) == 0}">

@@ -2,6 +2,7 @@
 package ouhk.comps380f.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,6 +25,9 @@ public class UserOrder implements Serializable {
     @Column(name = "item_id")
     private int item_id;
     
+     @Column(name = "checkout_date")
+    private String date;
+    
     public UserOrder() {
     }
 
@@ -32,6 +36,16 @@ public class UserOrder implements Serializable {
         this.item_id = itemId;
     }
     // getters and setters of all properties
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    
 
     public int getId() {
         return id;

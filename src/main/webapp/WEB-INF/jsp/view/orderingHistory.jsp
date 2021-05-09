@@ -10,10 +10,8 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
 
-        <h2>Shopping Cart</h2>
-        <c:if test="${param.successful != null}">
-            <p>You have successfully check out your order.</p>
-        </c:if>
+        <h2>Ordering History</h2>
+
 
         <c:choose>
             <c:when test="${fn:length(shoppingcartDatabase) == 0}">
@@ -23,17 +21,16 @@
                 <c:forEach items="${shoppingcartDatabase}" var="sc">
                     <c:forEach items="${itemDatabase}" var="item">
                         <c:if test="${sc.item_id==item.id}">
-                            <c:if test="${sc.date ==null}">
+                            <c:if test="${sc.date !=null}">
                                 Item ${item.id}:
                                 <a href="<c:url value="/item/view/${item.id}" />">
-                                    <c:out value="${item.itemName}" /></a><br/><br/>
+                                    <c:out value="${item.itemName}" /></a> - ${sc.date}<br/><br/>
                                 </c:if>
                             </c:if>
                         </c:forEach>
                     </c:forEach>
                 </c:otherwise>
             </c:choose>
-        <br/> <br/><a href="<c:url value="/item/checkout" />">Check Out Your Order</a>
 
         <br/> <br/><a href="<c:url value="/item" />">Return to item list</a>
     </body>

@@ -117,7 +117,6 @@ public class ItemUserController {
         modelAndView.addObject("itemUser", itemUser);
         ItemUser currentUser = itemUserRepo.findById(principal.getName()).orElse(null);
         modelAndView.addObject("User", currentUser);
-        System.out.println("abcd:"+currentUser.getUsername());
 
         Form userForm = new Form();
 
@@ -148,7 +147,7 @@ public class ItemUserController {
 
         itemUserRepo.save(updatedUser);
 
-        return "redirect:/user/list";
+        return "redirect:/item";
     }
 
     @GetMapping("/delete/{username}")

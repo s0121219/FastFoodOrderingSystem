@@ -2,7 +2,10 @@ package ouhk.comps380f.controller;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -77,20 +80,34 @@ public class ItemController {
     @Transactional(rollbackFor = UserOrderNotFound.class)
     public String checkout(ModelMap model, Principal principal)
             throws UserOrderNotFound {
-
-        for (UserOrder deletedUserOrder : userOrderService.getUserOrderByUsername(principal.getName())) {
-            if (deletedUserOrder == null) {
-                throw new UserOrderNotFound();
+        List<UserOrder> userOrderList = userOrderService.getUserOrderByUsername(principal.getName()); //        for (UserOrder userOrder : userOrderService.getUserOrderByUsername(principal.getName())) {
+                //            if (userOrder == null) {
+                //                throw new UserOrderNotFound();
+                //            }
+        for (int x = 0; x < userOrderList.size(); x++) {
+            String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+            if (userOrderList.get(x).getDate() == null) {
+                userOrderList.get(x).setDate(timeStamp);
             }
-            userOrderRepo.delete(deletedUserOrder);
         }
-
+        for (UserOrder userOrder : userOrderList) {
+            userOrderRepo.save(userOrder);
+        }
         return "redirect:/item/shoppingcart?successful";
+    }
+
+    @GetMapping("/orderinghistory")
+    public String orderinghistory(ModelMap model, Principal principal) {
+        model.addAttribute("shoppingcartDatabase", userOrderService.getUserOrderByUsername(principal.getName()));
+        model.addAttribute("itemDatabase", itemService.getItems());
+
+        return "orderingHistory";
     }
 
     @GetMapping("/create")
     public ModelAndView create() {
         return new ModelAndView("add", "itemForm", new Form());
+
     }
 
     public static class Form {

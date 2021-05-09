@@ -19,6 +19,7 @@ CREATE TABLE user_orders (
     user_orders_id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
     username VARCHAR(50) NOT NULL,
     item_id INTEGER NOT NULL ,
+    checkout_date VARCHAR(50),
     PRIMARY KEY (user_orders_id)
 );
 
