@@ -31,7 +31,7 @@ public class Item implements Serializable {
     private List<Attachment> attachments = new ArrayList<>();
     
      @OneToMany(mappedBy = "item", fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL, orphanRemoval = true)
+            cascade = CascadeType.REMOVE, orphanRemoval = true)
     @Fetch(FetchMode.SUBSELECT)
     private List<Comment> comments = new ArrayList<>();
 

@@ -22,6 +22,7 @@ import ouhk.comps380f.dao.CommentRepository;
 import ouhk.comps380f.dao.ItemUserRepository;
 import ouhk.comps380f.dao.UserOrderRepository;
 import ouhk.comps380f.exception.AttachmentNotFound;
+import ouhk.comps380f.exception.CommentNotFound;
 import ouhk.comps380f.exception.ItemNotFound;
 import ouhk.comps380f.exception.UserOrderNotFound;
 import ouhk.comps380f.model.Attachment;
@@ -183,29 +184,26 @@ public class ItemController {
     }
 
     @GetMapping("/view/{itemId}")
-    public ModelAndView showview(@PathVariable("itemId") long itemId,
-            ModelMap model) {
+    public ModelAndView showview(@PathVariable("itemId") long itemId) {
         Item item = itemService.getItem(itemId);
         if (item == null) {
             return new ModelAndView(new RedirectView("/item/list", true));
         }
         ModelAndView modelAndView = new ModelAndView("view");
-        
+
         modelAndView.addObject("item", item);
-        
+
         CommentForm commentForm = new CommentForm();
         modelAndView.addObject("commentForm", commentForm);
         List<Comment> commentlist = new ArrayList<>();
-        for(Comment comment:commentRepo.findAll())
-        {
-            if(comment.getItemId()==itemId)
-            {
+        for (Comment comment : commentRepo.findAll()) {
+            if (comment.getItemId() == itemId) {
                 commentlist.add(comment);
             }
         }
-        
-        modelAndView.addObject("comment",commentlist);
-                
+
+        modelAndView.addObject("comment", commentlist);
+
         return modelAndView;
     }
 
@@ -217,7 +215,20 @@ public class ItemController {
         comment.setContent(commentform.getContent());
         comment.setItem(item);
         commentRepo.save(comment);
-        
+
+        return "redirect:/item/view/" + itemId;
+
+    }
+
+    @GetMapping("/view/{itemId}/deletecomment/{commentId}")
+    @Transactional(rollbackFor = CommentNotFound.class)
+    public String view_delcomment(@PathVariable("itemId") long itemId, @PathVariable("commentId") long commentId, CommentForm commentform)
+            throws CommentNotFound {
+        Comment comment = commentRepo.findById(commentId).orElse(null);
+        if (comment == null) {
+            throw new CommentNotFound();
+        }
+        commentRepo.delete(comment);
         return "redirect:/item/view/" + itemId;
 
     }

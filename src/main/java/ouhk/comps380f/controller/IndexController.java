@@ -1,6 +1,8 @@
 package ouhk.comps380f.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
+import ouhk.comps380f.dao.CommentRepository;
 import ouhk.comps380f.dao.ItemUserRepository;
 import ouhk.comps380f.model.Attachment;
+import ouhk.comps380f.model.Comment;
 import ouhk.comps380f.model.Item;
 import ouhk.comps380f.model.ItemUser;
 import ouhk.comps380f.service.AttachmentService;
@@ -31,6 +35,8 @@ public class IndexController {
 
     @Resource
     ItemUserRepository itemUserRepo;
+    @Resource
+    CommentRepository commentRepo;
 
         public static class Form {
 
@@ -100,14 +106,25 @@ public class IndexController {
     }
 
     @GetMapping("/index_view/{itemId}")
-    public String view(@PathVariable("itemId") long itemId,
-            ModelMap model) {
+    public ModelAndView view(@PathVariable("itemId") long itemId) {
         Item item = itemService.getItem(itemId);
         if (item == null) {
-            return "redirect:/item/list";
+            return new ModelAndView(new RedirectView("/index", true));
         }
-        model.addAttribute("item", item);
-        return "index_view";
+        ModelAndView modelAndView = new ModelAndView("index_view");
+         modelAndView.addObject("item", item);
+         
+         List<Comment> commentlist = new ArrayList<>();
+        for(Comment comment:commentRepo.findAll())
+        {
+            if(comment.getItemId()==itemId)
+            {
+                commentlist.add(comment);
+            }
+        }
+        
+        modelAndView.addObject("comment",commentlist);
+        return modelAndView;
     }
 
     @GetMapping("/{itemId}/attachment/{attachment:.+}")

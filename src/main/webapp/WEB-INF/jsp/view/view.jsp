@@ -39,13 +39,16 @@
                 Unavailable for order.<br /><br />
             </c:otherwise>
         </c:choose>
-                
-                Comment:
-                <c:forEach items="${comment}" var="cm">
-                    <br /><br />${cm.content}
-                </c:forEach>
-                
-                <br />-------------------------------------<br /><br />
+
+        Comment:
+        <c:forEach items="${comment}" var="cm">
+            <br /><br />${cm.content}
+            <security:authorize access="hasRole('ADMIN')">
+                [<a href="<c:url value="/item/view/${item.id}/deletecomment/${cm.id}" />">Delete</a>]
+            </security:authorize>
+        </c:forEach>
+
+        <br />-------------------------------------<br /><br />
         <form:form method="POST" enctype="multipart/form-data" 
                    modelAttribute="commentForm">
             <form:label path="content">Write your comment</form:label><br />

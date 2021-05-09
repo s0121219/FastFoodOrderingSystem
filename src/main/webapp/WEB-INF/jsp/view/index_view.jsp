@@ -43,6 +43,6 @@
                     <br /><br />${cm.content}
                 </c:forEach>
                     
-        <a href="<c:url value="/" />">Return to item list</a>
+        <br /><br /><a href="<c:url value="/" />">Return to item list</a>
     </body>
 </html>
