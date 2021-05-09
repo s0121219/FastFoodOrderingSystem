@@ -27,7 +27,7 @@
                 <c:forEach items="${itemDatabase}" var="item">
                     Item ${item.id}:
                     <a href="<c:url value="/index_view/${item.id}" />">
-                        <c:out value="${item.itemName}" /></a><br>
+                        <c:out value="${item.itemName}" /></a><br/><br/>
 
                 </c:forEach>
             </c:otherwise>

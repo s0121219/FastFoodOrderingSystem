@@ -109,9 +109,11 @@ public class ItemUserController {
     @GetMapping("/edit/{username}")
     public ModelAndView showEdit(@PathVariable("username") String username, HttpServletRequest request,Principal principal) {
         ItemUser itemUser = itemUserRepo.findById(username).orElse(null);
-        if (itemUser == null) {
-            return new ModelAndView(new RedirectView("/user", true));
+        if (itemUser == null|| (!request.isUserInRole("ROLE_ADMIN")
+ && !principal.getName().equals(itemUser.getUsername()))) {
+            return new ModelAndView(new RedirectView("/item", true));
         }
+        
         itemUser.setPassword(itemUser.getPassword().replace("{noop}", ""));
         ModelAndView modelAndView = new ModelAndView("editUser");
         modelAndView.addObject("itemUser", itemUser);
@@ -127,6 +129,7 @@ public class ItemUserController {
         userForm.setDeliveryAddress(userForm.getDeliveryAddress());
 
         modelAndView.addObject("userForm", userForm);
+        
         return modelAndView;
     }
 
